@@ -21,6 +21,7 @@ public class Target : MonoBehaviour, IShootable
 
 	private Color defaultFaceColour;
 	private Color lerpFaceColour;
+	private float lerpPositionY = 0.0f;
 	private Color emissionColour;
 
 	private Renderer myRenderer;
@@ -37,29 +38,34 @@ public class Target : MonoBehaviour, IShootable
 		//setup colours used in the lerp - do it here for performance
 		defaultFaceColour = myPointsText.faceColor;
 		lerpFaceColour = defaultFaceColour;
-
+		
 		startPos = myPointsText.rectTransform.position;
-
+		lerpPositionY = startPos.y;
 		//disable the text
-		myPointsText.enabled = false;
+		//myPointsText.enabled = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-    }
+		myPointsText.faceColor = lerpFaceColour;
+		myPointsText.rectTransform.position = new Vector3(myPointsText.rectTransform.position.x, lerpPositionY, myPointsText.rectTransform.position.z);
+	}
 	
 	
 
 	private IEnumerator targetHit()
 	{
 		float elapsedTime = 0.0f;
-		float lerpPositionY = 0.0f;
+		
 
 		//guard
-		if(myPointsText == null) yield break;
-		if (targetEmissiveMaterial == null) yield break;
+		if ((myPointsText == null) || (targetEmissiveMaterial == null))
+		{
+			isHit = false;
+			yield break;
+		}
+		
 
 		//dull the target
 		targetEmissiveMaterial.DisableKeyword("_EMISSION");
@@ -72,18 +78,17 @@ public class Target : MonoBehaviour, IShootable
 		DynamicGI.UpdateEnvironment();
 
 		//set the points text
-		myPointsText.text = "+" + myPointsText.ToString();
+		myPointsText.text = "+" + points.ToString();
 		myPointsText.enabled = true;
 
-		while(elapsedTime > damageDuration)
+		while(elapsedTime < damageDuration)
         {
 			elapsedTime += Time.deltaTime;
 
 			lerpFaceColour.a = Mathf.Lerp(defaultFaceColour.a, 0, elapsedTime / damageDuration);
-			lerpPositionY = Mathf.Lerp(myPointsText.rectTransform.position.y, (myPointsText.rectTransform.position.y + floatUpDistance), elapsedTime / damageDuration);
+			lerpPositionY = Mathf.Lerp(startPos.y, (startPos.y + floatUpDistance), elapsedTime / damageDuration);
 
-			myPointsText.faceColor = lerpFaceColour;
-			myPointsText.rectTransform.position = new Vector3(myPointsText.rectTransform.position.x, lerpPositionY, myPointsText.rectTransform.position.z);
+			
 			yield return null;
         }
 
@@ -101,20 +106,20 @@ public class Target : MonoBehaviour, IShootable
 		DynamicGI.SetEmissive(myRenderer, emissionColour);
 		DynamicGI.UpdateEnvironment();
 
-		
-		myPointsText.rectTransform.position = startPos;
+		lerpFaceColour.a = 1;
+		lerpPositionY = startPos.y;
 		myPointsText.enabled = false;
 		isHit = false;
 
 	}
 
-    public void doDamage(int damage)
+    public void DoDamage(int damage)
     {
 		//target does not have a health
-		doDamage();
+		DoDamage();
     }
 
-    public void doDamage()
+    public void DoDamage()
     {
 		//if already showing points - do not register hit
 		if (isHit) return;

@@ -1,6 +1,6 @@
 
 interface IShootable
 {
-    public void doDamage(int damage);
-    public void doDamage();
+    public void DoDamage(int damage);
+    public void DoDamage();
 }
