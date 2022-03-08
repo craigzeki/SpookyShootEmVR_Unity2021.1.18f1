@@ -17,6 +17,7 @@ public class Gun : MonoBehaviour
     [SerializeField] private Transform barrelEndPosition;
     [SerializeField] private LineRenderer debugLine;
     private float timeLastShot = 0f;
+    private int targetLayerMask = 1 << 8;
     // Start is called before the first frame update
     void Start()
     {
@@ -50,9 +51,10 @@ public class Gun : MonoBehaviour
             RaycastHit hit;
 
             debugLine.SetPosition(0, barrelEndPosition.position);
-            if (Physics.Raycast(barrelEndPosition.position, barrelEndPosition.forward, out hit, weaponRange))
+            if (Physics.Raycast(barrelEndPosition.position, barrelEndPosition.forward, out hit, weaponRange, targetLayerMask))
             {
                 debugLine.SetPosition(1, hit.point);
+                hit.transform.gameObject.GetComponent<IShootable>().doDamage();
                 
             }
             else
