@@ -5,7 +5,7 @@
       "app_key": "application.generated.unity.spookyshootemvr_unity2021.1.18f1.exe",
       "launch_type": "url",
       "url": "steam://launch/",
-      "action_manifest_path": "E:\\Projects\\Github\\SpookyShootEmVR_Unity2021.1.18f1\\Assets\\StreamingAssets\\SteamVR\\actions.json",
+      "action_manifest_path": "C:\\Users\\Student\\Documents\\GitHub\\SpookyShootEmVR_Unity2021.1.18f1\\Assets\\StreamingAssets\\SteamVR\\actions.json",
       "strings": {
         "en_us": {
           "name": "SpookyShootEmVR_Unity2021.1.18f1 [Testing]"

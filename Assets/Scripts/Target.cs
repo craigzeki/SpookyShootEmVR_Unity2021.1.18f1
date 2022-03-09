@@ -13,6 +13,8 @@ public class Target : MonoBehaviour, IShootable
 	[SerializeField] private float damageDuration = 0.5f;
 	[SerializeField] private float floatUpDistance = 0.5f;
 	[SerializeField] private int emissiveMaterialIndex = 0;
+	[SerializeField] private Animator animator;
+	
 	
 	
 	private Material targetEmissiveMaterial;
@@ -31,7 +33,7 @@ public class Target : MonoBehaviour, IShootable
     void Start()
     {
 		if (myPointsText == null) return;
-
+		
 		myRenderer = GetComponent<Renderer>();
 		targetEmissiveMaterial = GetComponent<Renderer>().materials[emissiveMaterialIndex];
 		emissionColour = targetEmissiveMaterial.GetColor("_EmissionColor");
@@ -42,7 +44,7 @@ public class Target : MonoBehaviour, IShootable
 		startPos = myPointsText.rectTransform.position;
 		lerpPositionY = startPos.y;
 		//disable the text
-		//myPointsText.enabled = false;
+		myPointsText.enabled = false;
     }
 
     // Update is called once per frame
@@ -65,7 +67,14 @@ public class Target : MonoBehaviour, IShootable
 			isHit = false;
 			yield break;
 		}
-		
+
+		if(animator != null)
+        {
+			//trigger the animation
+			animator.SetBool("isOpen", !animator.GetBool("isOpen"));
+
+		}
+
 
 		//dull the target
 		targetEmissiveMaterial.DisableKeyword("_EMISSION");

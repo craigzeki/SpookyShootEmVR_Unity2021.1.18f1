@@ -54,7 +54,7 @@ public class Gun : MonoBehaviour
             if (Physics.Raycast(barrelEndPosition.position, barrelEndPosition.forward, out hit, weaponRange, targetLayerMask))
             {
                 debugLine.SetPosition(1, hit.point);
-                hit.transform.gameObject.GetComponent<IShootable>().doDamage();
+                hit.transform.gameObject.GetComponent<IShootable>().DoDamage();
                 
             }
             else
