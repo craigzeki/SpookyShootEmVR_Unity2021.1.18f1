@@ -90,6 +90,9 @@ public class Target : MonoBehaviour, IShootable
 		myPointsText.text = "+" + points.ToString();
 		myPointsText.enabled = true;
 
+		//add the points to the score
+		ScoringSystem.Instance.AddPoints(points);
+
 		while(elapsedTime < damageDuration)
         {
 			elapsedTime += Time.deltaTime;

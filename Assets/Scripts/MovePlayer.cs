@@ -24,6 +24,7 @@ public class MovePlayer : MonoBehaviour
         {
             //Debug.Log("Collision Enter with MovingPlatform");
             playerRoot.transform.SetParent(other.transform);
+            other.GetComponentInParent<Waypoints>().StartMoving();
         }
     }
 
@@ -32,8 +33,11 @@ public class MovePlayer : MonoBehaviour
        // Debug.Log("Collision Exit");
         if (other.tag == "MovingPlatform")
         {
-           // Debug.Log("Collision Exited with MovingPlatform");
+            // Debug.Log("Collision Exited with MovingPlatform");
+            other.GetComponentInParent<Waypoints>().StopMoving();
             playerRoot.transform.SetParent(null);
+
         }
     }
+
 }

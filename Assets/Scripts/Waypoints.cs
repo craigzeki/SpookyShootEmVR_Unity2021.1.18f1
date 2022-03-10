@@ -37,7 +37,8 @@ public class Waypoints : MonoBehaviour
 			//transform.position = closestHit.position;
 			agent.enabled = true;
         }
-		
+
+		StopMoving();
 		GotoNextPoint();
 	}
 
@@ -53,20 +54,31 @@ public class Waypoints : MonoBehaviour
 			if (agent.isOnNavMesh)
 			{
 
-
+				if (destPoint >= points.Count)
+				{
+					StopMoving();
+					destPoint = 0;
+				}
 				agent.SetDestination(points[destPoint].position);
                 //if goes higher than the total number of waypoints -> go back to start of array
                 //destPoint = (destPoint + 1) % points.Count;
                 destPoint++;
-                if(destPoint >= points.Count)
-                {
-                    destPoint = 0;
-                }
+                
 			}
 		}
 		
 		
 	}
+
+	public void StartMoving()
+    {
+		agent.speed = 1;
+    }
+
+	public void StopMoving()
+    {
+		agent.speed = 0;
+    }
 
 	// Update is called once per frame
 	void Update()
