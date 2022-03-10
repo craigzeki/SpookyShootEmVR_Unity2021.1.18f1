@@ -13,7 +13,7 @@ public class Target : MonoBehaviour, IShootable
 	[SerializeField] private float damageDuration = 0.5f;
 	[SerializeField] private float floatUpDistance = 0.5f;
 	[SerializeField] private int emissiveMaterialIndex = 0;
-	[SerializeField] private Animator animator;
+	[SerializeField] private iAnimatableObject animatableObject;
 	
 	
 	
@@ -33,7 +33,9 @@ public class Target : MonoBehaviour, IShootable
     void Start()
     {
 		if (myPointsText == null) return;
-		
+
+		animatableObject = GetComponentInParent<iAnimatableObject>();
+
 		myRenderer = GetComponent<Renderer>();
 		targetEmissiveMaterial = GetComponent<Renderer>().materials[emissiveMaterialIndex];
 		emissionColour = targetEmissiveMaterial.GetColor("_EmissionColor");
@@ -68,10 +70,10 @@ public class Target : MonoBehaviour, IShootable
 			yield break;
 		}
 
-		if(animator != null)
+		if(animatableObject != null)
         {
 			//trigger the animation
-			animator.SetBool("isOpen", !animator.GetBool("isOpen"));
+			animatableObject.DoAnimations();
 
 		}
 
