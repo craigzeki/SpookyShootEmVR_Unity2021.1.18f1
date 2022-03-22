@@ -4,18 +4,22 @@ using UnityEngine;
 
 public class Helper : MonoBehaviour, iAnimatableObject
 {
-    //reference to paricle system
     private ParticleSystem particles;
 
-    //implement the iAnimatableObject
     void iAnimatableObject.DoAnimations()
     {
         particles.Play();
     }
 
+    // Start is called before the first frame update
     void Start()
     {
         particles = GetComponent<ParticleSystem>();
     }
 
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
 }
