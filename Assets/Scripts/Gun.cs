@@ -104,10 +104,16 @@ public class Gun : MonoBehaviour
             RaycastHit hit;
 
             debugLine.SetPosition(0, barrelEndPosition.position);
-            if (Physics.Raycast(barrelEndPosition.position, barrelEndPosition.forward, out hit, weaponRange, targetLayerMask))
+            //if (Physics.Raycast(barrelEndPosition.position, barrelEndPosition.forward, out hit, weaponRange, targetLayerMask))
+            if (Physics.Raycast(barrelEndPosition.position, barrelEndPosition.forward, out hit, weaponRange))
             {
                 debugLine.SetPosition(1, hit.point);
-                hit.transform.gameObject.GetComponentInChildren<IShootable>().DoDamage();
+                
+                if(hit.transform.gameObject.GetComponent<IShootable>() != null)
+                {
+                    hit.transform.gameObject.GetComponent<IShootable>().DoDamage();
+                }
+                
                 
             }
             else

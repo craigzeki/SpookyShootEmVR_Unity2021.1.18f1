@@ -15,6 +15,11 @@ public class LimitFrameRate : MonoBehaviour
     private float timeDelay = 2.0f;
     private float timeElapsed = 0f;
 
+    //second method
+    private int frameCount = 0;
+    private int framesPerSecond = 0;
+    [SerializeField] private float averageDuration = 2.0f; //2s
+
     private void Awake()
     {
         if(fixFPS == true)
@@ -34,22 +39,40 @@ public class LimitFrameRate : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        timeElapsed += Time.deltaTime;
-        if(timeElapsed >= timeDelay)
-        {
-            minFPS = 200;
-            maxFPS = 0;
-            timeElapsed = 0f;
-        }
-        int curFPS = ((int)Mathf.Round((1.0f / Time.deltaTime)));
 
-        if (curFPS < minFPS) minFPS = curFPS;
-        if (curFPS > maxFPS) maxFPS = curFPS;
+        //old method, min, max and current but not smoothed / averaged
+        //timeElapsed += Time.deltaTime;
+        //if(timeElapsed >= timeDelay)
+        //{
+        //    minFPS = 200;
+        //    maxFPS = 0;
+        //    timeElapsed = 0f;
+        //}
+        //int curFPS = ((int)Mathf.Round((1.0f / Time.deltaTime)));
 
-        //FPSText1.SetText(("FPS: " + Mathf.Round((1.0f / Time.deltaTime))).ToString());
-        FPSText1.SetText(minFPS.ToString() + " : " + curFPS.ToString() + " : " + maxFPS.ToString());
+        //if (curFPS < minFPS) minFPS = curFPS;
+        //if (curFPS > maxFPS) maxFPS = curFPS;
+
+        ////FPSText1.SetText(("FPS: " + Mathf.Round((1.0f / Time.deltaTime))).ToString());
+        //FPSText1.SetText(minFPS.ToString() + " : " + curFPS.ToString() + " : " + maxFPS.ToString());
+
+        //FPSText2.SetText(FPSText1.text);
+
         
-        FPSText2.SetText(FPSText1.text);
+        frameCount++;
+        timeElapsed += Time.deltaTime;
+
+        if(timeElapsed >= averageDuration)
+        {
+            framesPerSecond = (int)((float)frameCount / timeElapsed);
+            frameCount = 0;
+            timeElapsed = 0;
+        }
+
+        FPSText1.SetText(framesPerSecond + " FPS");
+        if(FPSText2 != null) FPSText2.SetText(FPSText1.text);
+
+
         if((Application.targetFrameRate != targetFPS) && (fixFPS == true))
         {
             Application.targetFrameRate = targetFPS;

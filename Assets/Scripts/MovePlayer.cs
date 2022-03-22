@@ -2,12 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using Valve.VR;
+
 public class MovePlayer : MonoBehaviour
 {
     [SerializeField] GameObject playerRoot;
+    [SerializeField] GameObject UserWarningMessage;
     // Start is called before the first frame update
     void Start()
     {
+        UserWarningMessage.SetActive(false);
         
     }
 
@@ -24,7 +28,10 @@ public class MovePlayer : MonoBehaviour
         {
             //Debug.Log("Collision Enter with MovingPlatform");
             playerRoot.transform.SetParent(other.transform);
-            other.GetComponentInParent<Waypoints>().StartMoving();
+            other.GetComponentInParent<MoveCart>().StartMoving();
+            UserWarningMessage.SetActive(false);
+            SteamVR_Fade.Start(Color.clear, 1);
+
         }
     }
 
@@ -34,8 +41,10 @@ public class MovePlayer : MonoBehaviour
         if (other.tag == "MovingPlatform")
         {
             // Debug.Log("Collision Exited with MovingPlatform");
-            other.GetComponentInParent<Waypoints>().StopMoving();
+            other.GetComponentInParent<MoveCart>().StopMoving();
             playerRoot.transform.SetParent(null);
+            UserWarningMessage.SetActive(true);
+            SteamVR_Fade.Start(Color.black, 1);
 
         }
     }
