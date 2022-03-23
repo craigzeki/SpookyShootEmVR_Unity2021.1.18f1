@@ -7,7 +7,7 @@ public class Pool : MonoBehaviour
 {
     [SerializeField] private GameObject pooledPrefab = null;
     [SerializeField] private int numberToPool = 0;
-    [SerializeField] private bool createOnDemand = false;
+    //[SerializeField] private bool createOnDemand = false;
 
     private List<GameObject> pool = new List<GameObject>();
     private List<GameObject> inUseObjects = new List<GameObject>();

@@ -1900,15 +1900,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 470473f6feaaf6847a2d059c67c633e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  actionShoot:
-    actionPath: /actions/shooter/in/shoot
-    needsReinit: 0
   debounceTimeThreshold: 0.5
   weaponRange: 100
   barrelEndPosition: {fileID: 3352643187081899421}
-  debugLine: {fileID: 6684454533712912300}
+  shotLine: {fileID: 6684454533712912300}
   inPlayReSpawnPoint: {fileID: 0}
   respawnDelay: 0.75
+  actionShoot:
+    actionPath: /actions/shooter/in/shoot
+    needsReinit: 0
 --- !u!64 &919132148143290563
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -19,9 +19,9 @@ public class LookAtObject : MonoBehaviour
         targetPosition = objectToLookAt.transform.position;
 
         //lock the rotation by forcing the target position to be the same as ours, e.g. same height. This will stop rotation in that axis
-        if (lockX) targetPosition.x = this.transform.position.x;
-        if (lockY) targetPosition.y = this.transform.position.y;
-        if (lockZ) targetPosition.z = this.transform.position.z;
+        if (lockX) targetPosition.x = this.gameObject.transform.localPosition.x;
+        if (lockY) targetPosition.y = this.gameObject.transform.localPosition.y;
+        if (lockZ) targetPosition.z = this.gameObject.transform.localPosition.z;
 
         this.transform.LookAt(targetPosition);
 

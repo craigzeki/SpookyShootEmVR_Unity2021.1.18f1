@@ -49,6 +49,7 @@ public class MoveCart : MonoBehaviour
 
         //set the next point to move to
         agent.SetDestination(points[nextPoint].position);
+
         nextPoint++;
     }
 

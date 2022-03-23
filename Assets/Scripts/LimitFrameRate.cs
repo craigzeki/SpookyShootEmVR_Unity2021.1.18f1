@@ -5,34 +5,33 @@ using TMPro;
 
 public class LimitFrameRate : MonoBehaviour
 {
+    //paramters for LimitFrameRate
     [SerializeField] TextMeshPro FPSText1;
     [SerializeField] TextMeshPro FPSText2;
     [SerializeField] bool fixFPS = false;
     [SerializeField] int targetFPS = 60;
 
-    private int minFPS = 200;
-    private int maxFPS = 0;
-    private float timeDelay = 2.0f;
-    private float timeElapsed = 0f;
+    //first method
+    //private int minFPS = 200;
+    //private int maxFPS = 0;
+    //private float timeDelay = 2.0f;
 
     //second method
     private int frameCount = 0;
     private int framesPerSecond = 0;
     [SerializeField] private float averageDuration = 2.0f; //2s
 
+    //common between methods
+    private float timeElapsed = 0f;
+
     private void Awake()
     {
+        //try and force the framerate
         if(fixFPS == true)
         {
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = targetFPS;
         }
-        
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
         
     }
 
@@ -73,6 +72,7 @@ public class LimitFrameRate : MonoBehaviour
         if(FPSText2 != null) FPSText2.SetText(FPSText1.text);
 
 
+        //reinforce the target framerate
         if((Application.targetFrameRate != targetFPS) && (fixFPS == true))
         {
             Application.targetFrameRate = targetFPS;
