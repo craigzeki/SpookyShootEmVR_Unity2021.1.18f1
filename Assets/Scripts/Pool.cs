@@ -22,6 +22,7 @@ public class Pool : MonoBehaviour
     {
         pool.Clear();
         inUseObjects.Clear();
+        //create the number of objects required and add to the pool
         for (int i = 0; i < numberToPool; i++)
         {
             addToPool(Instantiate(pooledPrefab, transform));
