@@ -1804,7 +1804,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 243078391499754788, guid: ec12f7772c03e4c4c9e4c2f1643595ad, type: 2}
   m_audioClip: {fileID: 8300000, guid: b2d159f7e00d44d9bbc2d50a0c4fef59, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.717
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -1848,7 +1848,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -1902,6 +1902,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debounceTimeThreshold: 0.5
   weaponRange: 100
+  damageDone: 10
   barrelEndPosition: {fileID: 3352643187081899421}
   shotLine: {fileID: 6684454533712912300}
   inPlayReSpawnPoint: {fileID: 0}

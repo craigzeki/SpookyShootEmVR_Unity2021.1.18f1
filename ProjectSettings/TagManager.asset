@@ -10,6 +10,7 @@ TagManager:
   - FxTemporaire
   - Helper
   - UICamera
+  - Ground
   layers:
   - Default
   - TransparentFX

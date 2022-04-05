@@ -4,4 +4,5 @@
 public interface iAnimatableObject
 {
     public void DoAnimations();
+    public void DoAnimations(int health);
 }

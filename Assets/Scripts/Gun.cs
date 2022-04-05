@@ -10,6 +10,7 @@ public class Gun : MonoBehaviour
     //Gun settings
     [SerializeField] private float debounceTimeThreshold = 0.5f;
     [SerializeField] private float weaponRange = 100.0f;
+    [SerializeField] private int damageDone = 10;
     [SerializeField] private Transform barrelEndPosition;
     [SerializeField] private LineRenderer shotLine;
     [SerializeField] private GameObject inPlayReSpawnPoint;
@@ -138,7 +139,7 @@ public class Gun : MonoBehaviour
                 //Test if the object hit implements the iShootable interface, if so, lets call its Damage routine
                 if(hit.transform.gameObject.GetComponent<IShootable>() != null)
                 {
-                    hit.transform.gameObject.GetComponent<IShootable>().DoDamage();
+                    hit.transform.gameObject.GetComponent<IShootable>().DoDamage(damageDone);
                 }
                 
             }

@@ -15,6 +15,8 @@ public class Target : MonoBehaviour, IShootable
 	[SerializeField] private float floatUpDistance = 0.5f;
 	[SerializeField] private int emissiveMaterialIndex = 0;
 	[SerializeField] private iAnimatableObject animatableObject;
+	[SerializeField] private int health = 0;
+	[SerializeField] private bool repeatedHitsAllowed = true;
 	
 
 	//prevents multiple hits until the coroutine is completed
@@ -30,6 +32,8 @@ public class Target : MonoBehaviour, IShootable
 	private Color lerpFaceColour;
 	private float lerpPositionY = 0.0f;
 	private Vector3 startPos;
+
+	private int startingHealth;
 
 	// Start is called before the first frame update
     void Start()
@@ -55,6 +59,10 @@ public class Target : MonoBehaviour, IShootable
 
 		//disable the points text
 		myPointsText.enabled = false;
+
+		//set the startingHelath for repeated hits
+		startingHealth = health;
+
     }
 
     // Update is called once per frame
@@ -64,8 +72,6 @@ public class Target : MonoBehaviour, IShootable
 		myPointsText.faceColor = lerpFaceColour;
 		myPointsText.rectTransform.position = new Vector3(myPointsText.rectTransform.position.x, lerpPositionY, myPointsText.rectTransform.position.z);
 	}
-	
-	
 
 	private IEnumerator targetHit()
 	{
@@ -81,25 +87,23 @@ public class Target : MonoBehaviour, IShootable
 		//trigger animations if available
 		if(animatableObject != null)
         {
-			animatableObject.DoAnimations();
+			animatableObject.DoAnimations(health);
 		}
 
-		//dull the target by switching off emmissive property
-		targetEmissiveMaterial.DisableKeyword("_EMISSION");
-		targetEmissiveMaterial.globalIlluminationFlags = MaterialGlobalIlluminationFlags.EmissiveIsBlack;
-		targetEmissiveMaterial.SetColor("_EmissionColor", Color.black);
-		//update the renderer with the change
-		RendererExtensions.UpdateGIMaterials(myRenderer);
-		DynamicGI.SetEmissive(myRenderer, Color.black);
-		//update the environment to handle any dynamic lighting change (shouldn't be needed by my lighting strategy, but included for completeness
-		DynamicGI.UpdateEnvironment();
+		DisableEmissive();
 
-		//set the points text
-		myPointsText.text = "+" + points.ToString();
-		myPointsText.enabled = true;
+		if(health <= 0)
+        {
+			setBannerText("+" + points.ToString());
 
-		//add the points to the score
-		ScoringSystem.Instance.AddPoints(points);
+			//add the points to the score
+			ScoringSystem.Instance.AddPoints(points);
+		}
+		else
+        {
+			setBannerText("Owch!");
+        }
+		
 
 		//lerp the transparency and position of the points text
 		while(elapsedTime < damageDuration)
@@ -113,6 +117,47 @@ public class Target : MonoBehaviour, IShootable
 			yield return null;
         }
 
+		if(repeatedHitsAllowed || health > 0)
+        {
+
+			EnableEmissive();
+			//allow the next hit
+			isHit = false;
+		}
+		else if(repeatedHitsAllowed && health <= 0)
+        {
+			//restore the health
+			health = startingHealth;
+        }
+
+		//reset parameters for next time
+		lerpFaceColour.a = 1;
+		lerpPositionY = startPos.y;
+		myPointsText.enabled = false;
+	}
+
+	private void setBannerText(string bannerText)
+    {
+		//set the points text
+		myPointsText.text = bannerText;
+		myPointsText.enabled = true;
+	}
+
+	private void DisableEmissive()
+    {
+		//dull the target by switching off emmissive property
+		targetEmissiveMaterial.DisableKeyword("_EMISSION");
+		targetEmissiveMaterial.globalIlluminationFlags = MaterialGlobalIlluminationFlags.EmissiveIsBlack;
+		targetEmissiveMaterial.SetColor("_EmissionColor", Color.black);
+		//update the renderer with the change
+		RendererExtensions.UpdateGIMaterials(myRenderer);
+		DynamicGI.SetEmissive(myRenderer, Color.black);
+		//update the environment to handle any dynamic lighting change (shouldn't be needed by my lighting strategy, but included for completeness
+		DynamicGI.UpdateEnvironment();
+	}
+
+	private void EnableEmissive()
+    {
 		//re light the target by switching the emissive property back on
 		targetEmissiveMaterial.EnableKeyword("_EMISSION");
 		targetEmissiveMaterial.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
@@ -126,26 +171,22 @@ public class Target : MonoBehaviour, IShootable
 		// Inform Unity's GI system to recalculate GI based on the new emission map.
 		DynamicGI.SetEmissive(myRenderer, emissionColour);
 		DynamicGI.UpdateEnvironment();
-
-		//reset parameters for next time
-		lerpFaceColour.a = 1;
-		lerpPositionY = startPos.y;
-		myPointsText.enabled = false;
-		isHit = false;
-
 	}
 
     public void DoDamage(int damage)
     {
-		//target does not have a health so no need to handle damage parameter
+		if (isHit) return;
+		health -= damage;
+		
 		DoDamage();
+		
     }
 
     public void DoDamage()
     {
 		//if already running the coroutine - do not register hit
 		if (isHit) return;
-
+		isHit = true;
 		StartCoroutine(targetHit());
 
     }

@@ -11,8 +11,14 @@ public class Barrel : MonoBehaviour, iAnimatableObject
     
     Animator animator;
 
+    public void DoAnimations(int health)
+    {
+        //barrel doesn't need to handle health
+        DoAnimations();
+    }
+
     //required by the interface
-    void iAnimatableObject.DoAnimations()
+    public void DoAnimations()
     {
         //set the animator controller to toggle open / close state
         animator.SetBool("isOpen", !animator.GetBool("isOpen"));

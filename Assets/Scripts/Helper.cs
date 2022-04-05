@@ -6,9 +6,14 @@ public class Helper : MonoBehaviour, iAnimatableObject
 {
     private ParticleSystem particles;
 
-    void iAnimatableObject.DoAnimations()
+    public void DoAnimations()
     {
         particles.Play();
+    }
+
+    public void DoAnimations(int health)
+    {
+        DoAnimations();
     }
 
     // Start is called before the first frame update
