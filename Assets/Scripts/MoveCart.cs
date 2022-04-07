@@ -9,14 +9,14 @@ public class MoveCart : MonoBehaviour
     [SerializeField] private GameObject waypoints;
     [SerializeField] private float maxSpeed = 1.0f;
     [SerializeField] private float waypointProximity = 0.05f;
+    [SerializeField] private GameObject followingCart;
 
     private UnityEngine.AI.NavMeshAgent agent;
     private List<Transform> points = new List<Transform>();
     public int nextPoint = 0;
 
-    void Start()
+    private void Awake()
     {
-
         //add all the objects to the list
         points.AddRange(waypoints.GetComponentsInChildren<Transform>());
         if (points.Count > 0)
@@ -28,7 +28,10 @@ public class MoveCart : MonoBehaviour
         //Can turn off autobraking to not stop between waypoints
         agent.autoBraking = false;
         agent.enabled = true;
+    }
 
+    void Start()
+    {
         StopMoving();
         SetNextPoint();
     }
@@ -56,11 +59,19 @@ public class MoveCart : MonoBehaviour
     public void StartMoving()
     {
         agent.speed = maxSpeed;
+        if(followingCart != null)
+        {
+            followingCart.GetComponent<MoveCart>().StartMoving();
+        }
     }
 
     public void StopMoving()
     {
         agent.speed = 0;
+        if (followingCart != null)
+        {
+            followingCart.GetComponent<MoveCart>().StopMoving();
+        }
     }
 
     void Update()

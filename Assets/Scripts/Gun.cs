@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
+using TMPro;
 
-
+[RequireComponent(typeof(AudioSource))]
 public class Gun : MonoBehaviour
 {
     //Gun settings
@@ -15,6 +16,13 @@ public class Gun : MonoBehaviour
     [SerializeField] private LineRenderer shotLine;
     [SerializeField] private GameObject inPlayReSpawnPoint;
     [SerializeField] private float respawnDelay = 0.75f;
+    [SerializeField] private int fullAmmo = 6;
+    [SerializeField] private TextMeshPro ammoText;
+
+    [SerializeField] private AudioClip gunFire;
+    [SerializeField] private AudioClip gunEmpty;
+    [SerializeField] private AudioClip gunReload;
+
 
     //SteamVR input
     [SerializeField] private SteamVR_Action_Boolean actionShoot = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Shooter", "Shoot");
@@ -31,7 +39,10 @@ public class Gun : MonoBehaviour
 
     //shot delay
     private float timeLastShot = 0f;
-    
+
+    //ammo
+    private int ammo;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -50,8 +61,17 @@ public class Gun : MonoBehaviour
 
         //setup the 'bullet' line
         shotLine.enabled = false;
+
+        ammo = fullAmmo;
+        //refresh the ammo text
+        updateAmmoText(ammo);
     }
 
+
+    private void updateAmmoText(int ammo)
+    {
+        ammoText.text = ammo.ToString();
+    }
 
     //No longer used, was intended to be used when Game Reset was called - but now scene is just reloaded
     //private void ResetGun()
@@ -69,7 +89,7 @@ public class Gun : MonoBehaviour
     {
         float timeElapsed = 0;
 
-        while(timeElapsed < respawnDelay)
+        while (timeElapsed < respawnDelay)
         {
             timeElapsed += Time.deltaTime;
             yield return null;
@@ -84,7 +104,7 @@ public class Gun : MonoBehaviour
     {
         bool shoot = false;
 
-        if(interactable.attachedToHand)
+        if (interactable.attachedToHand)
         {
             //stop returning to respawn point if it was
             //allows for ability to switch hands
@@ -92,7 +112,7 @@ public class Gun : MonoBehaviour
             //set flag to detect when not being held anymore
             wasPreviouslyHeld = true;
             //Debug.Log("Gun attached");
-            
+
             //get the state of the trigger button on the controller holding the gun
             SteamVR_Input_Sources hand = interactable.attachedToHand.handType;
             shoot = actionShoot.GetState(hand);
@@ -102,7 +122,7 @@ public class Gun : MonoBehaviour
         else
         {
             //if was previously held, then must have dropped it as not attached to hand anymore
-            if(wasPreviouslyHeld)
+            if (wasPreviouslyHeld)
             {
                 //no longer being held start short debounce timer and move to in play spawn  point
                 StartCoroutine(ReturnToSpawnPoint());
@@ -117,39 +137,82 @@ public class Gun : MonoBehaviour
         // could improve by removing timer and testing if the coroutine is not running
         if (shoot && (timeLastShot >= debounceTimeThreshold))
         {
-
             timeLastShot = 0f;
-
-            //start the shooting 'actions' (audio and bullet line draw)
-            StartCoroutine(Shoot());
-
-            //Move everything below here to Shoot function?
-            
-            //set the bullet line start position
-            shotLine.SetPosition(0, barrelEndPosition.position);
-
-
-            //Test if something was hit
-            RaycastHit hit;
-            if (Physics.Raycast(barrelEndPosition.position, barrelEndPosition.forward, out hit, weaponRange))
+            if (ammo > 0)
             {
-                //set the bullet line end position to whatever was hit
-                shotLine.SetPosition(1, hit.point);
-                
-                //Test if the object hit implements the iShootable interface, if so, lets call its Damage routine
-                if(hit.transform.gameObject.GetComponent<IShootable>() != null)
+                ammo--;
+                //refresh the ammo text
+                updateAmmoText(ammo);
+
+                //start the shooting 'actions' (audio and bullet line draw)
+                StartCoroutine(Shoot());
+
+                //Move everything below here to Shoot function?
+
+                //set the bullet line start position
+                shotLine.SetPosition(0, barrelEndPosition.position);
+
+
+                //Test if something was hit
+                RaycastHit hit;
+                if (Physics.Raycast(barrelEndPosition.position, barrelEndPosition.forward, out hit, weaponRange))
                 {
-                    hit.transform.gameObject.GetComponent<IShootable>().DoDamage(damageDone);
+                    //set the bullet line end position to whatever was hit
+                    shotLine.SetPosition(1, hit.point);
+
+                    //Test if the object hit implements the iShootable interface, if so, lets call its Damage routine
+                    if (hit.transform.gameObject.GetComponent<IShootable>() != null)
+                    {
+                        hit.transform.gameObject.GetComponent<IShootable>().DoDamage(damageDone);
+                    }
+
                 }
-                
+                else
+                {
+                    //Have not hit anything within weaponRange, set the line end position to the range of the weapon
+                    shotLine.SetPosition(1, barrelEndPosition.position + (barrelEndPosition.forward * weaponRange));
+                }
             }
             else
             {
-                //Have not hit anything within weaponRange, set the line end position to the range of the weapon
-                shotLine.SetPosition(1, barrelEndPosition.position + (barrelEndPosition.forward * weaponRange));
+
+                //play empty gun sound
+                PlayAudio(gunEmpty);
             }
+
         }
 
+
+        if(ammo < fullAmmo)
+        {
+            //Test if we try to reload
+            RaycastHit[] reloadHits;
+            reloadHits = Physics.RaycastAll(barrelEndPosition.position, barrelEndPosition.forward, 3.0f);
+            foreach (RaycastHit reloadHit in reloadHits)
+            {
+                //Test if we hit the reload pad
+                if (reloadHit.transform.gameObject.tag == "ReloadPad")
+                {
+                    //reload the gun
+                    ammo = fullAmmo;
+                    updateAmmoText(ammo);
+                    PlayAudio(gunReload);
+                }
+            }
+        }
+        
+
+
+
+
+    }
+
+    private void PlayAudio(AudioClip clip)
+    {
+        myAudio.Stop();
+        myAudio.clip = clip;
+        myAudio.loop = false;
+        myAudio.Play();
     }
 
     //Shoot the gun
@@ -157,7 +220,7 @@ public class Gun : MonoBehaviour
     {
         //Debug.Log("Shoot");
         // play the 'bang' sound
-        myAudio.Play();
+        PlayAudio(gunFire);
 
         //allow the bullet line to be drawn
         shotLine.enabled = true;

@@ -11,6 +11,8 @@ TagManager:
   - Helper
   - UICamera
   - Ground
+  - TeleportPoint
+  - ReloadPad
   layers:
   - Default
   - TransparentFX

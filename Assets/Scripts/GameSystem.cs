@@ -38,6 +38,7 @@ public class GameSystem : MonoBehaviour
     void Start()
     {
         restartButton.onButtonDown.AddListener(OnRestartGameButton);
+        BGAudioManager.Instance.PlayMenuMusic();
     }
 
     // Update is called once per frame

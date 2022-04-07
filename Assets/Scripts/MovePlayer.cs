@@ -31,8 +31,14 @@ public class MovePlayer : MonoBehaviour
             other.GetComponentInParent<MoveCart>().StartMoving();
             UserWarningMessage.SetActive(false);
             SteamVR_Fade.Start(Color.clear, 1);
-
+            BGAudioManager.Instance.PlayGameMusic();
         }
+
+        if(other.gameObject.GetComponentInChildren<iTeleportPointUnlocker>() != null)
+        {
+            other.gameObject.GetComponentInChildren<iTeleportPointUnlocker>().UnlockTeleportPoint();
+        }
+
     }
 
     private void OnTriggerExit(Collider other)
